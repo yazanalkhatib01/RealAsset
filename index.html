@@ -1,0 +1,921 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --p:#4361ee;--p2:#3a0ca3;--p-light:#eef0ff;--p-mid:#c5caff;
+  --s:#059669;--s-bg:#ecfdf5;--w:#d97706;--w-bg:#fffbeb;--d:#dc2626;--d-bg:#fef2f2;--i:#0284c7;--i-bg:#f0f9ff;
+  --bg:#f8fafc;--surf:#fff;--surf2:#f1f5f9;--bdr:#e2e8f0;--bdr2:#f1f5f9;
+  --t1:#0f172a;--t2:#334155;--t3:#64748b;--t4:#94a3b8;
+  --sw:220px;--th:56px;--r:8px;--rs:5px;--rl:12px;
+  --sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shm:0 4px 6px -1px rgba(0,0,0,.07),0 2px 4px -2px rgba(0,0,0,.04);
+  --shl:0 10px 15px -3px rgba(0,0,0,.08),0 4px 6px -4px rgba(0,0,0,.04);
+  --font:'Plus Jakarta Sans',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{font-size:13px}
+body{font-family:var(--font);background:var(--bg);color:var(--t1);display:flex;min-height:100vh;overflow:hidden}
+a{text-decoration:none;color:inherit}
+button{font-family:var(--font);cursor:pointer;border:none;outline:none;background:none}
+input,select,textarea{font-family:var(--font);outline:none}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
+
+/* ─ SIDEBAR ─ */
+.sb{width:var(--sw);min-height:100vh;background:var(--t1);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto;transition:width .2s}
+.sb-logo{height:var(--th);padding:0 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.logo-mk{width:30px;height:30px;background:var(--p);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-mk svg{width:17px;height:17px;fill:#fff}
+.logo-tx{display:flex;flex-direction:column}
+.logo-nm{font-size:13px;font-weight:800;color:#fff;letter-spacing:-.02em;line-height:1.1}
+.logo-sub{font-size:9px;font-weight:500;color:rgba(255,255,255,.35);letter-spacing:.1em;text-transform:uppercase}
+.sb-sec{padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.sb-sec:last-of-type{border:none}
+.sb-lbl{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.22);padding:6px 16px 3px}
+.ni{display:flex;align-items:center;gap:9px;padding:7px 16px;cursor:pointer;position:relative;transition:background .15s;user-select:none}
+.ni:hover{background:rgba(255,255,255,.05)}
+.ni.act{background:rgba(67,97,238,.25)}
+.ni.act::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--p);border-radius:0 3px 3px 0}
+.ni-ic{width:16px;height:16px;flex-shrink:0;color:rgba(255,255,255,.38);transition:color .15s}
+.ni:hover .ni-ic,.ni.act .ni-ic{color:#fff}
+.ni-lb{font-size:12.5px;font-weight:500;color:rgba(255,255,255,.5);transition:color .15s;flex:1}
+.ni:hover .ni-lb,.ni.act .ni-lb{color:#fff}
+.ni-badge{font-size:10px;font-weight:700;background:var(--p);color:#fff;padding:1px 6px;border-radius:10px}
+.sb-foot{margin-top:auto;padding:12px;border-top:1px solid rgba(255,255,255,.07)}
+.uc{display:flex;align-items:center;gap:9px;padding:7px;border-radius:var(--rs);cursor:pointer;transition:background .15s}
+.uc:hover{background:rgba(255,255,255,.05)}
+.av{width:30px;height:30px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.un{font-size:12px;font-weight:600;color:#fff}
+.ur{font-size:10px;color:rgba(255,255,255,.38)}
+
+/* ─ MAIN ─ */
+.mw{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh;overflow:hidden}
+/* ─ TOPBAR ─ */
+.tb{height:var(--th);background:var(--surf);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 20px;gap:10px;position:sticky;top:0;z-index:50;flex-shrink:0}
+.tb-bc{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--t3);flex:1}
+.tb-bc .act{color:var(--t1);font-weight:600}
+.tb-bc svg{width:13px;height:13px;color:var(--t4)}
+.tb-search{display:flex;align-items:center;background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--rs);padding:0 10px;gap:7px;width:200px;height:34px;transition:border-color .15s,box-shadow .15s}
+.tb-search:focus-within{border-color:var(--p);box-shadow:0 0 0 3px rgba(67,97,238,.1);background:#fff}
+.tb-search svg{width:13px;height:13px;color:var(--t4);flex-shrink:0}
+.tb-search input{background:none;border:none;font-size:12.5px;color:var(--t1);flex:1;width:100%}
+.tb-search input::placeholder{color:var(--t4)}
+.tb-acts{display:flex;align-items:center;gap:3px}
+.ib{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:var(--rs);color:var(--t3);transition:background .15s,color .15s;position:relative}
+.ib:hover{background:var(--surf2);color:var(--t1)}
+.ib svg{width:17px;height:17px}
+.nd{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--d);border:1.5px solid #fff}
+.tb-div{width:1px;height:22px;background:var(--bdr);margin:0 4px}
+.tb-user{display:flex;align-items:center;gap:8px;padding:4px 8px 4px 4px;border-radius:var(--rs);cursor:pointer;transition:background .15s}
+.tb-user:hover{background:var(--surf2)}
+.tb-un{font-size:12.5px;font-weight:600;color:var(--t1);line-height:1.2}
+.tb-ur{font-size:10.5px;color:var(--t3)}
+
+/* ─ CONTENT ─ */
+.ct{flex:1;padding:20px;overflow-y:auto;overflow-x:hidden}
+.pg{display:none;animation:pgIn .18s ease}
+.pg.act{display:block}
+@keyframes pgIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─ SHARED ─ */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;gap:10px;flex-wrap:wrap}
+.pt{font-size:18px;font-weight:700;color:var(--t1);line-height:1.2}
+.ps{font-size:12px;color:var(--t3);margin-top:2px}
+.pa{display:flex;align-items:center;gap:7px;flex-shrink:0}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--rs);font-size:12.5px;font-weight:600;transition:all .15s;white-space:nowrap;cursor:pointer}
+.btn svg{width:14px;height:14px;flex-shrink:0}
+.btn-p{background:var(--p);color:#fff;border:1px solid var(--p)}
+.btn-p:hover{background:#3351d4;border-color:#3351d4}
+.btn-o{background:var(--surf);color:var(--t2);border:1px solid var(--bdr)}
+.btn-o:hover{background:var(--surf2);border-color:#cbd5e1}
+.btn-g{background:none;color:var(--t3);border:1px solid transparent;padding:7px 10px}
+.btn-g:hover{background:var(--surf2);color:var(--t1)}
+.btn-d{background:var(--d);color:#fff;border:1px solid var(--d)}
+.btn-d:hover{background:#b91c1c}
+.btn-s{background:var(--s);color:#fff;border:1px solid var(--s)}
+.btn-sm{padding:5px 11px;font-size:11.5px}
+.btn-xs{padding:3px 9px;font-size:11px}
+.btn-ic{padding:7px}
+
+/* Card */
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);box-shadow:var(--sh)}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bdr2);gap:10px;flex-wrap:wrap}
+.ct-{font-size:13.5px;font-weight:700;color:var(--t1)}
+.cs{font-size:11.5px;color:var(--t3);margin-top:1px}
+.cb{padding:18px}
+
+/* KPI */
+.kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:18px}
+.kc{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:10px;transition:box-shadow .2s,transform .2s;cursor:default}
+.kc:hover{box-shadow:var(--shm);transform:translateY(-1px)}
+.kt{display:flex;align-items:flex-start;justify-content:space-between}
+.kl{font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.03em;text-transform:uppercase}
+.ki{width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center}
+.ki svg{width:17px;height:17px}
+.kv{font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.03em;line-height:1}
+.kf{display:flex;align-items:center;gap:5px}
+.kch{display:flex;align-items:center;gap:3px;font-size:11.5px;font-weight:600}
+.kch.up{color:var(--s)}.kch.dn{color:var(--d)}
+.kch svg{width:11px;height:11px}
+.kp{font-size:11px;color:var(--t4)}
+
+/* Table */
+.tw{width:100%;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{text-align:left;padding:9px 13px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);background:var(--surf2);border-bottom:1px solid var(--bdr);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--bdr2);transition:background .1s;cursor:default}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#fafbff}
+tbody td{padding:10px 13px;color:var(--t2);vertical-align:middle}
+.tb-b{font-weight:600;color:var(--t1)}
+.tb-lk{color:var(--p);font-weight:600;cursor:pointer}
+.tb-lk:hover{text-decoration:underline}
+.tb-m{font-family:var(--mono);font-size:11px;color:var(--t3)}
+.td-ck input[type=checkbox]{width:13px;height:13px;accent-color:var(--p);cursor:pointer}
+
+/* Badge */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.bd{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.bs{background:var(--s-bg);color:var(--s)}.bs .bd{background:var(--s)}
+.bw{background:var(--w-bg);color:var(--w)}.bw .bd{background:var(--w)}
+.bd_{background:var(--d-bg);color:var(--d)}.bd_ .bd{background:var(--d)}
+.bi{background:var(--i-bg);color:var(--i)}.bi .bd{background:var(--i)}
+.bn{background:var(--surf2);color:var(--t3);border:1px solid var(--bdr)}.bn .bd{background:var(--t4)}
+.bp{background:var(--p-light);color:var(--p)}
+.tag{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;background:var(--p-light);color:var(--p)}
+
+/* Toolbar */
+.tlb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sf{display:flex;align-items:center;background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rs);padding:0 10px;gap:7px;height:34px;flex:1;min-width:180px;max-width:280px;transition:border-color .15s,box-shadow .15s}
+.sf:focus-within{border-color:var(--p);box-shadow:0 0 0 3px rgba(67,97,238,.1)}
+.sf svg{width:13px;height:13px;color:var(--t4);flex-shrink:0}
+.sf input{background:none;border:none;font-size:12.5px;color:var(--t1);flex:1}
+.sf input::placeholder{color:var(--t4)}
+.fsel{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rs);padding:0 24px 0 9px;height:34px;font-size:12.5px;color:var(--t2);font-family:var(--font);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;transition:border-color .15s}
+.fsel:focus{border-color:var(--p);outline:none}
+
+/* Form */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.fgf{grid-column:1/-1}
+.fm{display:flex;flex-direction:column;gap:4px}
+.fl{font-size:11.5px;font-weight:600;color:var(--t2)}
+.fl .req{color:var(--d);margin-left:2px}
+.fi,.fs,.fta{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rs);padding:8px 11px;font-size:12.5px;color:var(--t1);font-family:var(--font);transition:border-color .15s,box-shadow .15s;width:100%}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(67,97,238,.1);outline:none}
+.fi::placeholder,.fta::placeholder{color:var(--t4)}
+.fs{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-color:var(--surf);padding-right:28px;cursor:pointer}
+.fta{resize:vertical;min-height:70px}
+.fh{font-size:10.5px;color:var(--t4);margin-top:2px}
+
+/* Modal */
+.mb{position:fixed;inset:0;z-index:200;background:rgba(15,23,42,.45);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s}
+.mb.op{opacity:1;pointer-events:all}
+.modal{background:var(--surf);border-radius:var(--rl);box-shadow:var(--shl);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;transform:scale(.95) translateY(8px);transition:transform .2s}
+.mb.op .modal{transform:scale(1) translateY(0)}
+.modal-lg{max-width:680px}
+.mh{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--bdr)}
+.mt{font-size:14px;font-weight:700;color:var(--t1)}
+.mbd{padding:18px}
+.mft{padding:13px 18px;border-top:1px solid var(--bdr);display:flex;align-items:center;justify-content:flex-end;gap:7px}
+.cb-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:5px;color:var(--t4);transition:background .15s,color .15s}
+.cb-btn:hover{background:var(--surf2);color:var(--t1)}
+.cb-btn svg{width:15px;height:15px}
+
+/* Pagination */
+.pag{display:flex;align-items:center;gap:3px}
+.pb{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--rs);font-size:12.5px;font-weight:500;cursor:pointer;background:none;border:1px solid var(--bdr);color:var(--t3);transition:all .15s}
+.pb:hover{background:var(--p-light);border-color:var(--p-mid);color:var(--p)}
+.pb.act{background:var(--p);border-color:var(--p);color:#fff}
+.pb svg{width:13px;height:13px}
+
+/* Card footer */
+.cf{padding:10px 18px;border-top:1px solid var(--bdr2);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cfi{font-size:11.5px;color:var(--t3)}
+
+/* Tabs */
+.tabs{display:flex;border-bottom:1px solid var(--bdr);margin-bottom:18px}
+.tab{padding:9px 14px;font-size:12.5px;font-weight:600;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s;white-space:nowrap}
+.tab:hover{color:var(--t1)}
+.tab.act{color:var(--p);border-bottom-color:var(--p)}
+
+/* Wizard */
+.wz{display:flex;align-items:center;margin-bottom:26px}
+.ws{display:flex;align-items:center;gap:9px}
+.wc{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex-shrink:0;border:2px solid var(--bdr);color:var(--t4);background:var(--surf);transition:all .2s}
+.ws.done .wc{background:var(--p);border-color:var(--p);color:#fff}
+.ws.act .wc{border-color:var(--p);color:var(--p);box-shadow:0 0 0 4px rgba(67,97,238,.12)}
+.wl{font-size:12px;font-weight:600;color:var(--t4)}
+.ws.act .wl,.ws.done .wl{color:var(--t1)}
+.wline{flex:1;height:2px;background:var(--bdr);margin:0 8px;transition:background .3s}
+.wline.done{background:var(--p)}
+
+/* Drop zone */
+.dz{border:2px dashed var(--bdr);border-radius:var(--r);padding:40px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+.dz:hover{border-color:var(--p);background:var(--p-light)}
+.dz svg{width:36px;height:36px;color:var(--t4);margin:0 auto 10px}
+.dz-t{font-size:13.5px;font-weight:600;color:var(--t2);margin-bottom:4px}
+.dz-s{font-size:11.5px;color:var(--t4)}
+.dz-s span{color:var(--p);font-weight:600}
+
+/* Perm table */
+.pt_{width:100%;border-collapse:collapse;font-size:12px}
+.pt_ th{padding:8px 10px;background:var(--surf2);font-weight:700;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);border:1px solid var(--bdr);text-align:center}
+.pt_ th:first-child{text-align:left}
+.pt_ td{padding:8px 10px;border:1px solid var(--bdr2);vertical-align:middle}
+.pt_ td:first-child{font-weight:600;color:var(--t2)}
+.pt_ td:not(:first-child){text-align:center}
+.pt_ tr:hover td{background:#fafbff}
+.pc{width:14px;height:14px;accent-color:var(--p);cursor:pointer}
+
+/* Alert */
+.alert{display:flex;align-items:flex-start;gap:9px;padding:11px 13px;border-radius:var(--rs);font-size:12.5px;border:1px solid}
+.alert svg{width:15px;height:15px;flex-shrink:0;margin-top:1px}
+.ai{background:var(--i-bg);border-color:#bae6fd;color:#0369a1}
+.as{background:var(--s-bg);border-color:#a7f3d0;color:#065f46}
+.aw{background:var(--w-bg);border-color:#fde68a;color:#92400e}
+
+/* Activity */
+.afl{display:flex;flex-direction:column}
+.afi{display:flex;align-items:flex-start;gap:11px;padding:10px 0;border-bottom:1px solid var(--bdr2)}
+.afi:last-child{border-bottom:none}
+.afw{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.afw svg{width:14px;height:14px}
+.afc{flex:1;min-width:0}
+.aft{font-size:12px;color:var(--t2);line-height:1.45}
+.aft strong{color:var(--t1);font-weight:600}
+.afm{font-size:10.5px;color:var(--t4);margin-top:2px}
+
+/* Info grid */
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.il{}
+.il-l{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--t4);margin-bottom:3px}
+.il-v{font-size:13px;font-weight:500;color:var(--t1)}
+
+/* G2/G3 */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.sep{height:1px;background:var(--bdr);margin:16px 0}
+
+/* Avatar colors */
+.av1{background:#4361ee}.av2{background:#7c3aed}.av3{background:#0891b2}.av4{background:#059669}.av5{background:#d97706}
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sb" id="sb">
+  <div class="sb-logo">
+    <div class="logo-mk"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+    <div class="logo-tx"><span class="logo-nm">RealAsset</span><span class="logo-sub">by REALSOFT</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="ni act" data-p="dash" onclick="nav('dash',this)">
+      <svg class="ni-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span class="ni-lb">Dashboard</span>
+    </div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Assets</div>
+    <div class="ni" data-p="assets" onclick="nav('assets',this)">
+      <svg class="ni-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      <span class="ni-lb">All Assets</span><span class="ni-badge">248</span>
+    </div>
+    <div class="ni" data-p="import" onclick="nav('import',this)">
+      <svg class="ni-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <span class="ni-lb">Import</span>
+    </div>
+    <div class="ni" data-p="export" onclick="nav('export',this)">
+      <svg class="ni-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span class="ni-lb">Export</span>
+    </div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">People</div>
+    <div class="ni" data-p="users" onclick="nav('users',this)">
+      <svg class="ni-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span class="ni-lb">Users</span>
+    </div>
+    <div class="ni" data-p="emp" onclick="nav('emp',this)">
+      <svg class="ni-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="ni-lb">Employees</span>
+    </div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Security</div>
+    <div class="ni" data-p="groups" onclick="nav('groups',this)">
+      <svg class="ni-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span class="ni-lb">Security Groups</span>
+    </div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Analytics</div>
+    <div class="ni" data-p="reports" onclick="nav('reports',this)">
+      <svg class="ni-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span class="ni-lb">Reports</span>
+    </div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">System</div>
+    <div class="ni" data-p="settings" onclick="nav('settings',this)">
+      <svg class="ni-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span class="ni-lb">Settings</span>
+    </div>
+  </div>
+  <div class="sb-foot">
+    <div class="uc">
+      <div class="av av1">AH</div>
+      <div><div class="un">Ahmed Hassan</div><div class="ur">Administrator</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="mw">
+  <!-- TOPBAR -->
+  <header class="tb">
+    <div class="tb-bc" id="bc">
+      <span>RealAsset</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      <span class="act">Dashboard</span>
+    </div>
+    <div class="tb-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search assets, users…">
+    </div>
+    <div class="tb-acts">
+      <button class="ib">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="nd"></span>
+      </button>
+      <div class="tb-div"></div>
+      <div class="tb-user">
+        <div class="av av1" style="width:28px;height:28px;font-size:10px">AH</div>
+        <div><div class="tb-un">Ahmed Hassan</div><div class="tb-ur">Administrator</div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="ct" id="ct">
+
+<!-- ═══════════ DASHBOARD ═══════════ -->
+<div class="pg act" id="pg-dash">
+  <div class="ph">
+    <div><div class="pt">Dashboard</div><div class="ps">Asset operations overview — updated just now</div></div>
+    <div class="pa">
+      <button class="btn btn-o btn-sm" onclick="nav('reports',document.querySelector('[data-p=reports]'))">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Reports
+      </button>
+      <button class="btn btn-p btn-sm" onclick="nav('add',null)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Asset
+      </button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kg">
+    <div class="kc"><div class="kt"><span class="kl">Total Assets</span><div class="ki" style="background:#eef0ff"><svg viewBox="0 0 24 24" fill="none" stroke="#4361ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div></div><div class="kv">2,481</div><div class="kf"><span class="kch up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>+12.3%</span><span class="kp">vs last month</span></div></div>
+    <div class="kc"><div class="kt"><span class="kl">Active Assets</span><div class="ki" style="background:#ecfdf5"><svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div></div><div class="kv">1,974</div><div class="kf"><span class="kch up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>+5.1%</span><span class="kp">vs last month</span></div></div>
+    <div class="kc"><div class="kt"><span class="kl">Checked-Out</span><div class="ki" style="background:#fffbeb"><svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div></div><div class="kv">347</div><div class="kf"><span class="kch dn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>-2.4%</span><span class="kp">vs last month</span></div></div>
+    <div class="kc"><div class="kt"><span class="kl">Active Users</span><div class="ki" style="background:#f0f9ff"><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div></div><div class="kv">64</div><div class="kf"><span class="kch up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>+8.7%</span><span class="kp">vs last month</span></div></div>
+    <div class="kc"><div class="kt"><span class="kl">Maintenance</span><div class="ki" style="background:#fef2f2"><svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div></div><div class="kv">42</div><div class="kf"><span class="kch dn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>+3 this week</span></div></div>
+  </div>
+
+  <!-- Charts row -->
+  <div class="g2" style="margin-bottom:14px">
+    <div class="card">
+      <div class="ch"><div><div class="ct-">Asset Additions</div><div class="cs">Monthly trend</div></div><select class="fsel" style="width:auto;height:30px;font-size:11.5px"><option>Last 6 Months</option><option>Last 12 Months</option></select></div>
+      <div style="padding:14px 16px 10px">
+        <svg viewBox="0 0 460 150" style="width:100%;height:auto" preserveAspectRatio="xMidYMid meet">
+          <line x1="36" y1="10" x2="36" y2="125" stroke="#e2e8f0" stroke-width="1"/>
+          <line x1="36" y1="125" x2="460" y2="125" stroke="#e2e8f0" stroke-width="1"/>
+          <line x1="36" y1="95" x2="460" y2="95" stroke="#e2e8f0" stroke-width=".5" stroke-dasharray="4"/>
+          <line x1="36" y1="65" x2="460" y2="65" stroke="#e2e8f0" stroke-width=".5" stroke-dasharray="4"/>
+          <line x1="36" y1="35" x2="460" y2="35" stroke="#e2e8f0" stroke-width=".5" stroke-dasharray="4"/>
+          <text x="30" y="128" text-anchor="end" font-size="9" fill="#94a3b8">0</text>
+          <text x="30" y="98" text-anchor="end" font-size="9" fill="#94a3b8">25</text>
+          <text x="30" y="68" text-anchor="end" font-size="9" fill="#94a3b8">50</text>
+          <text x="30" y="38" text-anchor="end" font-size="9" fill="#94a3b8">75</text>
+          <rect x="52" y="74" width="44" height="51" fill="#c5caff" rx="3"/>
+          <rect x="122" y="60" width="44" height="65" fill="#c5caff" rx="3"/>
+          <rect x="192" y="45" width="44" height="80" fill="#c5caff" rx="3"/>
+          <rect x="262" y="28" width="44" height="97" fill="#4361ee" rx="3"/>
+          <rect x="332" y="50" width="44" height="75" fill="#c5caff" rx="3"/>
+          <rect x="402" y="38" width="44" height="87" fill="#c5caff" rx="3"/>
+          <text x="74" y="140" text-anchor="middle" font-size="9" fill="#94a3b8">Nov</text>
+          <text x="144" y="140" text-anchor="middle" font-size="9" fill="#94a3b8">Dec</text>
+          <text x="214" y="140" text-anchor="middle" font-size="9" fill="#94a3b8">Jan</text>
+          <text x="284" y="140" text-anchor="middle" font-size="9" fill="#4361ee" font-weight="600">Feb</text>
+          <text x="354" y="140" text-anchor="middle" font-size="9" fill="#94a3b8">Mar</text>
+          <text x="424" y="140" text-anchor="middle" font-size="9" fill="#94a3b8">Apr</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct-">Assets by Category</div><div class="cs">Current distribution</div></div></div>
+      <div class="cb" style="padding:16px">
+        <div style="display:flex;gap:16px;align-items:center">
+          <svg width="110" height="110" viewBox="0 0 110 110" style="flex-shrink:0">
+            <circle cx="55" cy="55" r="44" fill="none" stroke="#e2e8f0" stroke-width="16"/>
+            <circle cx="55" cy="55" r="44" fill="none" stroke="#4361ee" stroke-width="16" stroke-dasharray="110 167" stroke-dashoffset="0" transform="rotate(-90 55 55)"/>
+            <circle cx="55" cy="55" r="44" fill="none" stroke="#818cf8" stroke-width="16" stroke-dasharray="66 211" stroke-dashoffset="-110" transform="rotate(-90 55 55)"/>
+            <circle cx="55" cy="55" r="44" fill="none" stroke="#c5caff" stroke-width="16" stroke-dasharray="50 227" stroke-dashoffset="-176" transform="rotate(-90 55 55)"/>
+            <circle cx="55" cy="55" r="44" fill="none" stroke="#e0e7ff" stroke-width="16" stroke-dasharray="51 226" stroke-dashoffset="-226" transform="rotate(-90 55 55)"/>
+            <text x="55" y="51" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">248</text>
+            <text x="55" y="63" text-anchor="middle" font-size="8.5" fill="#94a3b8">assets</text>
+          </svg>
+          <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+            <div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:2px;background:#4361ee;flex-shrink:0"></span><span style="font-size:11.5px;color:var(--t2)">Electronics</span></div><span style="font-size:11px;font-weight:700;color:var(--t1)">38%</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:2px;background:#818cf8;flex-shrink:0"></span><span style="font-size:11.5px;color:var(--t2)">Furniture</span></div><span style="font-size:11px;font-weight:700;color:var(--t1)">22%</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:2px;background:#c5caff;flex-shrink:0"></span><span style="font-size:11.5px;color:var(--t2)">Vehicles</span></div><span style="font-size:11px;font-weight:700;color:var(--t1)">17%</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:2px;background:#e0e7ff;flex-shrink:0"></span><span style="font-size:11.5px;color:var(--t2)">Equipment</span></div><span style="font-size:11px;font-weight:700;color:var(--t1)">23%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent activity + checked out -->
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div><div class="ct-">Recent Activity</div><div class="cs">Last 24 hours</div></div><button class="btn btn-g btn-sm">View All</button></div>
+      <div style="padding:6px 16px">
+        <div class="afl">
+          <div class="afi"><div class="afw" style="background:#eef0ff"><svg viewBox="0 0 24 24" fill="none" stroke="#4361ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="afc"><div class="aft"><strong>Laptop Dell XPS 13</strong> added by Sara K.</div><div class="afm">2 minutes ago</div></div></div>
+          <div class="afi"><div class="afw" style="background:#ecfdf5"><svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="afc"><div class="aft"><strong>HP Printer Pro 400</strong> checked out to Mohamed R.</div><div class="afm">15 min ago</div></div></div>
+          <div class="afi"><div class="afw" style="background:#fffbeb"><svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="afc"><div class="aft"><strong>Office Chair (x3)</strong> moved to maintenance</div><div class="afm">1 hour ago</div></div></div>
+          <div class="afi"><div class="afw" style="background:#f0f9ff"><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="afc"><div class="aft">New user <strong>Fatima Al-Said</strong> created</div><div class="afm">3 hours ago</div></div></div>
+          <div class="afi"><div class="afw" style="background:#fef2f2"><svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></div><div class="afc"><div class="aft"><strong>Projector BenQ</strong> decommissioned</div><div class="afm">5 hours ago</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct-">Overdue Check-Outs</div></div><button class="btn btn-g btn-sm">View All</button></div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Asset</th><th>Employee</th><th>Due</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tb-b">MacBook Pro 14"</span></td><td>Omar Y.</td><td><span style="font-size:11px;color:var(--d);font-weight:600">May 1</span></td><td><span class="badge bd_"><span class="bd"></span>Overdue</span></td></tr>
+            <tr><td><span class="tb-b">Canon EOS R6</span></td><td>Layla M.</td><td><span style="font-size:11px;color:var(--t3)">May 8</span></td><td><span class="badge bw"><span class="bd"></span>Due Soon</span></td></tr>
+            <tr><td><span class="tb-b">iPad Pro 12.9"</span></td><td>Ali H.</td><td><span style="font-size:11px;color:var(--t3)">May 15</span></td><td><span class="badge bi"><span class="bd"></span>Out</span></td></tr>
+            <tr><td><span class="tb-b">Nikon D850</span></td><td>Nora S.</td><td><span style="font-size:11px;color:var(--t3)">May 20</span></td><td><span class="badge bi"><span class="bd"></span>Out</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ ASSETS LIST ═══════════ -->
+<div class="pg" id="pg-assets">
+  <div class="ph">
+    <div><div class="pt">Assets</div><div class="ps">248 total assets across all locations</div></div>
+    <div class="pa">
+      <button class="btn btn-o btn-sm" onclick="nav('import',document.querySelector('[data-p=import]'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import</button>
+      <button class="btn btn-o btn-sm" onclick="nav('export',document.querySelector('[data-p=export]'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export</button>
+      <button class="btn btn-p btn-sm" onclick="nav('add',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Asset</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch">
+      <div class="tlb" style="flex:1">
+        <div class="sf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search assets…"></div>
+        <select class="fsel"><option>All Statuses</option><option>Active</option><option>Checked Out</option><option>Maintenance</option><option>Retired</option></select>
+        <select class="fsel"><option>All Categories</option><option>Electronics</option><option>Furniture</option><option>Vehicles</option><option>Equipment</option></select>
+        <select class="fsel"><option>All Locations</option><option>HQ - Floor 1</option><option>HQ - Floor 2</option><option>Warehouse</option></select>
+      </div>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:32px"><input type="checkbox" style="width:13px;height:13px;accent-color:var(--p)"></th><th>Asset Name</th><th>Tag</th><th>Category</th><th>Status</th><th>Location</th><th>Assigned To</th><th>Acquired</th><th style="width:72px">Actions</th></tr></thead>
+        <tbody>
+          <tr><td class="td-ck"><input type="checkbox"></td><td><span class="tb-lk" onclick="nav('detail',null)">MacBook Pro 14" M3</span></td><td><span class="tb-m">AST-0042</span></td><td><span class="tag">Electronics</span></td><td><span class="badge bi"><span class="bd"></span>Checked Out</span></td><td>HQ - Floor 2</td><td>Omar Youssef</td><td><span style="font-size:11px;color:var(--t3)">Jan 15, 2024</span></td><td><div style="display:flex;gap:3px"><button class="ib" style="width:26px;height:26px" onclick="nav('detail',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="ib" style="width:26px;height:26px" onclick="nav('add',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td></tr>
+          <tr><td class="td-ck"><input type="checkbox"></td><td><span class="tb-lk" onclick="nav('detail',null)">Dell Monitor U2722D</span></td><td><span class="tb-m">AST-0091</span></td><td><span class="tag">Electronics</span></td><td><span class="badge bs"><span class="bd"></span>Active</span></td><td>HQ - Floor 1</td><td>—</td><td><span style="font-size:11px;color:var(--t3)">Mar 2, 2024</span></td><td><div style="display:flex;gap:3px"><button class="ib" style="width:26px;height:26px" onclick="nav('detail',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="ib" style="width:26px;height:26px" onclick="nav('add',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td></tr>
+          <tr><td class="td-ck"><input type="checkbox"></td><td><span class="tb-lk" onclick="nav('detail',null)">Herman Miller Aeron</span></td><td><span class="tb-m">AST-0118</span></td><td><span class="tag" style="background:#ecfdf5;color:#059669">Furniture</span></td><td><span class="badge bw"><span class="bd"></span>Maintenance</span></td><td>Warehouse</td><td>—</td><td><span style="font-size:11px;color:var(--t3)">Feb 10, 2023</span></td><td><div style="display:flex;gap:3px"><button class="ib" style="width:26px;height:26px" onclick="nav('detail',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="ib" style="width:26px;height:26px" onclick="nav('add',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td></tr>
+          <tr><td class="td-ck"><input type="checkbox"></td><td><span class="tb-lk" onclick="nav('detail',null)">Toyota Corolla 2023</span></td><td><span class="tb-m">AST-0203</span></td><td><span class="tag" style="background:#fffbeb;color:#d97706">Vehicle</span></td><td><span class="badge bs"><span class="bd"></span>Active</span></td><td>Branch Office</td><td>Khaled Badr</td><td><span style="font-size:11px;color:var(--t3)">Jun 5, 2023</span></td><td><div style="display:flex;gap:3px"><button class="ib" style="width:26px;height:26px" onclick="nav('detail',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="ib" style="width:26px;height:26px" onclick="nav('add',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td></tr>
+          <tr><td class="td-ck"><input type="checkbox"></td><td><span class="tb-lk" onclick="nav('detail',null)">Canon ImageRunner 2630i</span></td><td><span class="tb-m">AST-0175</span></td><td><span class="tag" style="background:#f0f9ff;color:#0284c7">Equipment</span></td><td><span class="badge bn"><span class="bd"></span>Retired</span></td><td>HQ - Floor 1</td><td>—</td><td><span style="font-size:11px;color:var(--t3)">Aug 12, 2021</span></td><td><div style="display:flex;gap:3px"><button class="ib" style="width:26px;height:26px" onclick="nav('detail',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="ib" style="width:26px;height:26px" onclick="nav('add',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cf"><span class="cfi">Showing 1–5 of 248 assets</span><div class="pag"><button class="pb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button><button class="pb act">1</button><button class="pb">2</button><button class="pb">3</button><span style="font-size:11px;color:var(--t4);padding:0 3px">…</span><button class="pb">50</button><button class="pb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ ADD ASSET ═══════════ -->
+<div class="pg" id="pg-add">
+  <div class="ph">
+    <div><div class="pt">Add New Asset</div><div class="ps">Fill in the details to register a new asset</div></div>
+    <div class="pa"><button class="btn btn-o btn-sm" onclick="nav('assets',document.querySelector('[data-p=assets]'))">Cancel</button><button class="btn btn-p btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save Asset</button></div>
+  </div>
+  <div class="g2" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card"><div class="ch"><div class="ct-">Basic Information</div></div><div class="cb"><div class="fg"><div class="fm fgf"><label class="fl">Asset Name <span class="req">*</span></label><input class="fi" placeholder="e.g., MacBook Pro 14 inch M3"></div><div class="fm"><label class="fl">Asset Tag</label><input class="fi" value="AST-0249"></div><div class="fm"><label class="fl">Serial Number</label><input class="fi" placeholder="e.g., SN123456789"></div><div class="fm"><label class="fl">Category <span class="req">*</span></label><select class="fs"><option value="">Select…</option><option>Electronics</option><option>Furniture</option><option>Vehicles</option><option>Equipment</option></select></div><div class="fm"><label class="fl">Status <span class="req">*</span></label><select class="fs"><option>Active</option><option>Checked Out</option><option>Maintenance</option><option>Retired</option></select></div><div class="fm"><label class="fl">Location</label><select class="fs"><option value="">Select…</option><option>HQ - Floor 1</option><option>HQ - Floor 2</option><option>Branch Office</option><option>Warehouse</option></select></div><div class="fm"><label class="fl">Assigned To</label><select class="fs"><option value="">Unassigned</option><option>Omar Youssef</option><option>Layla Mansour</option><option>Ali Hassan</option></select></div><div class="fm fgf"><label class="fl">Notes</label><textarea class="fta" placeholder="Optional notes…"></textarea></div></div></div></div>
+      <div class="card"><div class="ch"><div class="ct-">Acquisition Details</div></div><div class="cb"><div class="fg"><div class="fm"><label class="fl">Purchase Date</label><input class="fi" type="date"></div><div class="fm"><label class="fl">Purchase Price</label><input class="fi" type="number" placeholder="0.00"></div><div class="fm"><label class="fl">Warranty Expires</label><input class="fi" type="date"></div><div class="fm"><label class="fl">Supplier / Vendor</label><input class="fi" placeholder="Vendor name"></div></div></div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card"><div class="ch"><div class="ct-">Asset Image</div></div><div class="cb"><div class="dz" style="padding:28px 14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><div class="dz-t">Drop image or <span>browse</span></div><div class="dz-s" style="margin-top:3px">PNG, JPG up to 5MB</div></div></div></div>
+      <div class="card"><div class="ch"><div class="ct-">Custom Fields</div><button class="btn btn-g btn-sm" onclick="openM('cf-modal')">+ Add Field</button></div><div class="cb"><div style="display:flex;flex-direction:column;gap:11px"><div class="fm"><label class="fl">Condition</label><select class="fs"><option>Excellent</option><option>Good</option><option>Fair</option><option>Poor</option></select></div><div class="fm"><label class="fl">Department</label><input class="fi" placeholder="e.g., Engineering"></div><div class="fm"><label class="fl">Insurance Policy #</label><input class="fi" placeholder="Policy number"></div></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ ASSET DETAIL ═══════════ -->
+<div class="pg" id="pg-detail">
+  <div class="ph">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="btn btn-g btn-ic" onclick="nav('assets',document.querySelector('[data-p=assets]'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div><div class="pt">MacBook Pro 14" M3</div><div style="display:flex;align-items:center;gap:7px;margin-top:3px"><span class="tb-m" style="font-size:11px">AST-0042</span><span class="badge bi"><span class="bd"></span>Checked Out</span></div></div>
+    </div>
+    <div class="pa"><button class="btn btn-o btn-sm">Check In</button><button class="btn btn-o btn-sm" onclick="nav('add',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button><button class="btn btn-d btn-sm">Decommission</button></div>
+  </div>
+  <div class="g2" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card"><div class="cb">
+        <div style="width:100%;height:160px;background:var(--surf2);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;margin-bottom:10px;color:var(--t4)"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+        <div style="display:flex;gap:6px">
+          <div style="width:56px;height:56px;background:var(--p-light);border-radius:6px;border:2px solid var(--p);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+          <div style="width:56px;height:56px;background:var(--surf2);border-radius:6px;border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+          <div style="width:56px;height:56px;background:var(--surf2);border-radius:6px;border:2px dashed var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t4)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        </div>
+      </div></div>
+      <div class="card"><div class="ch"><div class="ct-">Asset Details</div></div><div class="cb"><div class="ig"><div class="il"><div class="il-l">Category</div><div class="il-v"><span class="tag">Electronics</span></div></div><div class="il"><div class="il-l">Status</div><div class="il-v"><span class="badge bi"><span class="bd"></span>Checked Out</span></div></div><div class="il"><div class="il-l">Serial Number</div><div class="il-v" style="font-family:var(--mono);font-size:11px">SN-MBP2024-00421</div></div><div class="il"><div class="il-l">Location</div><div class="il-v">HQ - Floor 2</div></div><div class="il"><div class="il-l">Assigned To</div><div class="il-v" style="color:var(--p);font-weight:600;cursor:pointer">Omar Youssef</div></div><div class="il"><div class="il-l">Condition</div><div class="il-v"><span class="badge bs">Excellent</span></div></div><div class="il"><div class="il-l">Purchase Date</div><div class="il-v">Jan 15, 2024</div></div><div class="il"><div class="il-l">Purchase Price</div><div class="il-v">$2,499.00</div></div><div class="il"><div class="il-l">Warranty Expires</div><div class="il-v">Jan 15, 2027</div></div><div class="il"><div class="il-l">Supplier</div><div class="il-v">Apple Inc.</div></div></div></div></div>
+    </div>
+    <div class="card"><div class="ch"><div class="ct-">Activity History</div></div><div style="padding:6px 16px"><div class="afl">
+      <div class="afi"><div class="afw" style="background:#eef0ff"><svg viewBox="0 0 24 24" fill="none" stroke="#4361ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="afc"><div class="aft">Checked out to <strong>Omar Youssef</strong></div><div class="afm">Apr 28, 2025 at 09:14 AM</div></div></div>
+      <div class="afi"><div class="afw" style="background:#ecfdf5"><svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="afc"><div class="aft">Checked in — returned by <strong>Layla Mansour</strong></div><div class="afm">Apr 10, 2025 at 02:30 PM</div></div></div>
+      <div class="afi"><div class="afw" style="background:#eef0ff"><svg viewBox="0 0 24 24" fill="none" stroke="#4361ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="afc"><div class="aft">Checked out to <strong>Layla Mansour</strong></div><div class="afm">Mar 22, 2025 at 11:00 AM</div></div></div>
+      <div class="afi"><div class="afw" style="background:#fffbeb"><svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="afc"><div class="aft">Details updated by <strong>Ahmed Hassan</strong></div><div class="afm">Feb 3, 2025 at 03:45 PM</div></div></div>
+      <div class="afi"><div class="afw" style="background:#ecfdf5"><svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="afc"><div class="aft">Asset registered by <strong>Sara Khalid</strong></div><div class="afm">Jan 15, 2024 at 10:00 AM</div></div></div>
+    </div></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ USERS ═══════════ -->
+<div class="pg" id="pg-users">
+  <div class="ph"><div><div class="pt">Users</div><div class="ps">Manage system access and roles</div></div><div class="pa"><button class="btn btn-p btn-sm" onclick="openM('add-user')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add User</button></div></div>
+  <div class="card">
+    <div class="ch"><div class="tlb"><div class="sf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search users…"></div><select class="fsel"><option>All Roles</option><option>Administrator</option><option>Manager</option><option>User</option><option>Viewer</option></select><select class="fsel"><option>All Statuses</option><option>Active</option><option>Inactive</option></select></div></div>
+    <div class="tw"><table>
+      <thead><tr><th style="width:32px"><input type="checkbox" style="width:13px;height:13px;accent-color:var(--p)"></th><th>User</th><th>Email</th><th>Role</th><th>Group</th><th>Status</th><th>Last Login</th><th style="width:90px">Actions</th></tr></thead>
+      <tbody>
+        <tr><td class="td-ck"><input type="checkbox"></td><td><div style="display:flex;align-items:center;gap:9px"><div class="av av1" style="width:30px;height:30px;font-size:10px">AH</div><div><div class="tb-b">Ahmed Hassan</div><div style="font-size:10.5px;color:var(--t4)">@ahmed.h</div></div></div></td><td>ahmed@realsoft.com</td><td><span class="badge bp">Administrator</span></td><td>Admins</td><td><span class="badge bs"><span class="bd"></span>Active</span></td><td><span style="font-size:11px;color:var(--t3)">Today, 09:14</span></td><td><div style="display:flex;gap:3px"><button class="ib" style="width:26px;height:26px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="ib" style="width:26px;height:26px" onclick="openM('pwd-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button><button class="ib" style="width:26px;height:26px;color:var(--d)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></div></td></tr>
+        <tr><td class="td-ck"><input type="checkbox"></td><td><div style="display:flex;align-items:center;gap:9px"><div class="av av2" style="width:30px;height:30px;font-size:10px">SK</div><div><div class="tb-b">Sara Khalid</div><div style="font-size:10.5px;color:var(--t4)">@sara.k</div></div></div></td><td>sara@realsoft.com</td><td><span class="badge bi">Manager</span></td><td>Asset Managers</td><td><span class="badge bs"><span class="bd"></span>Active</span></td><td><span style="font-size:11px;color:var(--t3)">Yesterday</span></td><td><div style="display:flex;gap:3px"><button class="ib" style="width:26px;height:26px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="ib" style="width:26px;height:26px" onclick="openM('pwd-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button><button class="ib" style="width:26px;height:26px;color:var(--d)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></div></td></tr>
+        <tr><td class="td-ck"><input type="checkbox"></td><td><div style="display:flex;align-items:center;gap:9px"><div class="av av3" style="width:30px;height:30px;font-size:10px">OY</div><div><div class="tb-b">Omar Youssef</div><div style="font-size:10.5px;color:var(--t4)">@omar.y</div></div></div></td><td>omar@realsoft.com</td><td><span class="badge bn">User</span></td><td>Standard Users</td><td><span class="badge bn"><span class="bd"></span>Inactive</span></td><td><span style="font-size:11px;color:var(--t3)">Apr 20</span></td><td><div style="display:flex;gap:3px"><button class="ib" style="width:26px;height:26px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="ib" style="width:26px;height:26px" onclick="openM('pwd-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button><button class="ib" style="width:26px;height:26px;color:var(--d)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></div></td></tr>
+      </tbody>
+    </table></div>
+    <div class="cf"><span class="cfi">Showing 1–3 of 64 users</span><div class="pag"><button class="pb act">1</button><button class="pb">2</button><button class="pb">3</button></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ EMPLOYEES ═══════════ -->
+<div class="pg" id="pg-emp">
+  <div class="ph"><div><div class="pt">Employees</div><div class="ps">People who can be assigned company assets</div></div><div class="pa"><button class="btn btn-p btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Employee</button></div></div>
+  <div class="card">
+    <div class="ch"><div class="tlb"><div class="sf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search employees…"></div><select class="fsel"><option>All Departments</option><option>Engineering</option><option>HR</option><option>Finance</option><option>Operations</option></select></div></div>
+    <div class="tw"><table>
+      <thead><tr><th>Employee</th><th>ID</th><th>Department</th><th>Position</th><th>Assets</th><th>Status</th><th style="width:130px">Actions</th></tr></thead>
+      <tbody>
+        <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av av1" style="width:30px;height:30px;font-size:10px">OY</div><div><div class="tb-b">Omar Youssef</div><div style="font-size:10.5px;color:var(--t4)">omar@realsoft.com</div></div></div></td><td><span class="tb-m">EMP-001</span></td><td>Engineering</td><td>Senior Developer</td><td><span class="badge bp">4 assets</span></td><td><span class="badge bs"><span class="bd"></span>Active</span></td><td><div style="display:flex;gap:5px"><button class="btn btn-o btn-xs" onclick="openM('assign-modal')">Assign Asset</button><button class="btn btn-g btn-xs">View</button></div></td></tr>
+        <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av av2" style="width:30px;height:30px;font-size:10px">LM</div><div><div class="tb-b">Layla Mansour</div><div style="font-size:10.5px;color:var(--t4)">layla@realsoft.com</div></div></div></td><td><span class="tb-m">EMP-002</span></td><td>HR</td><td>HR Manager</td><td><span class="badge bp">2 assets</span></td><td><span class="badge bs"><span class="bd"></span>Active</span></td><td><div style="display:flex;gap:5px"><button class="btn btn-o btn-xs" onclick="openM('assign-modal')">Assign Asset</button><button class="btn btn-g btn-xs">View</button></div></td></tr>
+        <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av av3" style="width:30px;height:30px;font-size:10px">KB</div><div><div class="tb-b">Khaled Badr</div><div style="font-size:10.5px;color:var(--t4)">khaled@realsoft.com</div></div></div></td><td><span class="tb-m">EMP-003</span></td><td>Operations</td><td>Fleet Manager</td><td><span class="badge bp">7 assets</span></td><td><span class="badge bs"><span class="bd"></span>Active</span></td><td><div style="display:flex;gap:5px"><button class="btn btn-o btn-xs" onclick="openM('assign-modal')">Assign Asset</button><button class="btn btn-g btn-xs">View</button></div></td></tr>
+        <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av av4" style="width:30px;height:30px;font-size:10px">NS</div><div><div class="tb-b">Nora Salem</div><div style="font-size:10.5px;color:var(--t4)">nora@realsoft.com</div></div></div></td><td><span class="tb-m">EMP-004</span></td><td>Finance</td><td>Accountant</td><td><span class="badge bn">1 asset</span></td><td><span class="badge bw"><span class="bd"></span>On Leave</span></td><td><div style="display:flex;gap:5px"><button class="btn btn-o btn-xs" onclick="openM('assign-modal')">Assign Asset</button><button class="btn btn-g btn-xs">View</button></div></td></tr>
+      </tbody>
+    </table></div>
+    <div class="cf"><span class="cfi">Showing 1–4 of 156 employees</span><div class="pag"><button class="pb act">1</button><button class="pb">2</button><button class="pb">3</button></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ SECURITY GROUPS ═══════════ -->
+<div class="pg" id="pg-groups">
+  <div class="ph"><div><div class="pt">Security Groups</div><div class="ps">Manage roles and permission sets</div></div><div class="pa"><button class="btn btn-p btn-sm" onclick="openM('group-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Create Group</button></div></div>
+  <div class="g2" style="align-items:start">
+    <div class="card">
+      <div class="ch"><div class="ct-">Groups</div></div>
+      <div style="padding:6px 0">
+        <div class="ni act" style="padding:11px 16px;border-radius:0"><div style="flex:1"><div style="font-size:12.5px;font-weight:600;color:#fff">Administrators</div><div style="font-size:10.5px;color:rgba(255,255,255,.4);margin-top:1px">Full system access</div></div><span style="font-size:10px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);padding:2px 7px;border-radius:10px">4 users</span></div>
+        <div class="ni" style="padding:11px 16px;border-radius:0;background:transparent"><div style="flex:1"><div style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,.65)">Asset Managers</div><div style="font-size:10.5px;color:rgba(255,255,255,.3);margin-top:1px">Manage assets, view users</div></div><span style="font-size:10px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.4);padding:2px 7px;border-radius:10px">12 users</span></div>
+        <div class="ni" style="padding:11px 16px;border-radius:0;background:transparent"><div style="flex:1"><div style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,.65)">Standard Users</div><div style="font-size:10.5px;color:rgba(255,255,255,.3);margin-top:1px">Request and return assets</div></div><span style="font-size:10px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.4);padding:2px 7px;border-radius:10px">38 users</span></div>
+        <div class="ni" style="padding:11px 16px;border-radius:0;background:transparent"><div style="flex:1"><div style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,.65)">Viewers</div><div style="font-size:10.5px;color:rgba(255,255,255,.3);margin-top:1px">Read-only access</div></div><span style="font-size:10px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.4);padding:2px 7px;border-radius:10px">10 users</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct-">Permissions — Administrators</div><div class="cs">Editing group permissions</div></div><button class="btn btn-p btn-sm">Save</button></div>
+      <div style="padding:14px;overflow-x:auto">
+        <table class="pt_">
+          <thead><tr><th>Module</th><th>View</th><th>Create</th><th>Edit</th><th>Delete</th><th>Export</th></tr></thead>
+          <tbody>
+            <tr><td>Assets</td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td></tr>
+            <tr><td>Users</td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td></tr>
+            <tr><td>Employees</td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td></tr>
+            <tr><td>Security Groups</td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc"></td></tr>
+            <tr><td>Reports</td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc"></td><td><input type="checkbox" class="pc"></td><td><input type="checkbox" class="pc"></td><td><input type="checkbox" class="pc" checked></td></tr>
+            <tr><td>Import / Export</td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc"></td><td><input type="checkbox" class="pc" checked></td></tr>
+            <tr><td>Settings</td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc" checked></td><td><input type="checkbox" class="pc"></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ REPORTS ═══════════ -->
+<div class="pg" id="pg-reports">
+  <div class="ph"><div><div class="pt">Reports</div><div class="ps">Analytics and operational insights</div></div><div class="pa"><button class="btn btn-o btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export PDF</button></div></div>
+  <div class="card" style="margin-bottom:14px"><div class="cb" style="padding:12px 16px"><div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap"><label style="font-size:12px;font-weight:600;color:var(--t2);white-space:nowrap">Report:</label><select class="fsel"><option>Assets Checked Out by Employee</option><option>Asset Status Summary</option><option>Maintenance Schedule</option></select><input class="fi" type="date" value="2025-01-01" style="width:auto"><input class="fi" type="date" value="2025-04-30" style="width:auto"><button class="btn btn-p btn-sm">Generate</button></div></div></div>
+  <div class="g3" style="margin-bottom:14px">
+    <div class="card" style="padding:15px"><div class="kl">Total Check-outs</div><div class="kv" style="font-size:22px;margin-top:4px">347</div></div>
+    <div class="card" style="padding:15px"><div class="kl">Avg Duration</div><div class="kv" style="font-size:22px;margin-top:4px">12.4d</div></div>
+    <div class="card" style="padding:15px"><div class="kl">Currently Overdue</div><div class="kv" style="font-size:22px;margin-top:4px;color:var(--d)">18</div></div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="ch"><div class="ct-">Check-Outs per Employee</div></div>
+    <div style="padding:14px 16px 10px">
+      <svg viewBox="0 0 560 150" style="width:100%;height:auto" preserveAspectRatio="xMidYMid meet">
+        <line x1="72" y1="10" x2="72" y2="125" stroke="#e2e8f0" stroke-width="1"/>
+        <line x1="72" y1="125" x2="560" y2="125" stroke="#e2e8f0" stroke-width="1"/>
+        <line x1="72" y1="95" x2="560" y2="95" stroke="#e2e8f0" stroke-width=".5" stroke-dasharray="4"/>
+        <line x1="72" y1="65" x2="560" y2="65" stroke="#e2e8f0" stroke-width=".5" stroke-dasharray="4"/>
+        <line x1="72" y1="35" x2="560" y2="35" stroke="#e2e8f0" stroke-width=".5" stroke-dasharray="4"/>
+        <text x="66" y="128" text-anchor="end" font-size="9" fill="#94a3b8">0</text>
+        <text x="66" y="98" text-anchor="end" font-size="9" fill="#94a3b8">2</text>
+        <text x="66" y="68" text-anchor="end" font-size="9" fill="#94a3b8">4</text>
+        <text x="66" y="38" text-anchor="end" font-size="9" fill="#94a3b8">6</text>
+        <rect x="88" y="35" width="50" height="90" fill="#4361ee" rx="3"/>
+        <rect x="165" y="65" width="50" height="60" fill="#818cf8" rx="3"/>
+        <rect x="242" y="50" width="50" height="75" fill="#818cf8" rx="3"/>
+        <rect x="319" y="80" width="50" height="45" fill="#818cf8" rx="3"/>
+        <rect x="396" y="95" width="50" height="30" fill="#818cf8" rx="3"/>
+        <rect x="473" y="110" width="50" height="15" fill="#c5caff" rx="3"/>
+        <text x="113" y="140" text-anchor="middle" font-size="9" fill="#64748b">Khaled B.</text>
+        <text x="190" y="140" text-anchor="middle" font-size="9" fill="#64748b">Omar Y.</text>
+        <text x="267" y="140" text-anchor="middle" font-size="9" fill="#64748b">Ali H.</text>
+        <text x="344" y="140" text-anchor="middle" font-size="9" fill="#64748b">Sara K.</text>
+        <text x="421" y="140" text-anchor="middle" font-size="9" fill="#64748b">Layla M.</text>
+        <text x="498" y="140" text-anchor="middle" font-size="9" fill="#64748b">Nora S.</text>
+        <text x="113" y="30" text-anchor="middle" font-size="10" fill="#4361ee" font-weight="700">7</text>
+        <text x="190" y="60" text-anchor="middle" font-size="10" fill="#4361ee" font-weight="700">4</text>
+        <text x="267" y="45" text-anchor="middle" font-size="10" fill="#4361ee" font-weight="700">5</text>
+        <text x="344" y="75" text-anchor="middle" font-size="10" fill="#4361ee" font-weight="700">3</text>
+        <text x="421" y="90" text-anchor="middle" font-size="10" fill="#4361ee" font-weight="700">2</text>
+        <text x="498" y="105" text-anchor="middle" font-size="10" fill="#4361ee" font-weight="700">1</text>
+      </svg>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct-">Checked-Out Assets Detail</div></div>
+    <div class="tw"><table>
+      <thead><tr><th>Employee</th><th>Asset</th><th>Tag</th><th>Check-Out Date</th><th>Due Date</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Khaled Badr</strong></td><td>Toyota Corolla 2023</td><td><span class="tb-m">AST-0203</span></td><td>Jan 5, 2025</td><td>Ongoing</td><td><span class="badge bi"><span class="bd"></span>Long-term</span></td></tr>
+        <tr><td><strong>Omar Youssef</strong></td><td>MacBook Pro 14" M3</td><td><span class="tb-m">AST-0042</span></td><td>Apr 28, 2025</td><td>May 28, 2025</td><td><span class="badge bi"><span class="bd"></span>Checked Out</span></td></tr>
+        <tr><td><strong>Ali Hassan</strong></td><td>iPad Pro 12.9"</td><td><span class="tb-m">AST-0109</span></td><td>Apr 10, 2025</td><td>May 15, 2025</td><td><span class="badge bi"><span class="bd"></span>Checked Out</span></td></tr>
+        <tr><td><strong>Layla Mansour</strong></td><td>Canon EOS R6</td><td><span class="tb-m">AST-0088</span></td><td>Apr 5, 2025</td><td>May 8, 2025</td><td><span class="badge bw"><span class="bd"></span>Due Soon</span></td></tr>
+        <tr><td><strong>Omar Youssef</strong></td><td>MacBook Air M2</td><td><span class="tb-m">AST-0031</span></td><td>Mar 1, 2025</td><td>May 1, 2025</td><td><span class="badge bd_"><span class="bd"></span>Overdue</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══════════ IMPORT ═══════════ -->
+<div class="pg" id="pg-import">
+  <div class="ph"><div><div class="pt">Import Assets</div><div class="ps">Bulk-import from CSV or Excel</div></div></div>
+  <div class="card" style="max-width:760px;margin:0 auto">
+    <div class="cb" style="padding:26px">
+      <div class="wz">
+        <div class="ws act" id="ws1"><div class="wc" id="wc1">1</div><div class="wl">Upload File</div></div>
+        <div class="wline" id="wln1"></div>
+        <div class="ws" id="ws2"><div class="wc" id="wc2">2</div><div class="wl">Map Columns</div></div>
+        <div class="wline" id="wln2"></div>
+        <div class="ws" id="ws3"><div class="wc" id="wc3">3</div><div class="wl">Review &amp; Confirm</div></div>
+      </div>
+      <div id="wstep1">
+        <div class="dz" onclick="wStep(2)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <div class="dz-t">Drag &amp; drop your file here, or <span>click to browse</span></div>
+          <div class="dz-s" style="margin-top:5px">Supports CSV, XLS, XLSX — max 10MB</div>
+        </div>
+        <div class="alert ai" style="margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div>Download our <strong>import template</strong> to ensure correct column format. Required: Asset Name, Category, Status.</div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:18px"><button class="btn btn-o btn-sm" onclick="nav('assets',document.querySelector('[data-p=assets]'))">Cancel</button><button class="btn btn-p btn-sm" onclick="wStep(2)">Next — Map Columns →</button></div>
+      </div>
+      <div id="wstep2" style="display:none">
+        <div class="alert as" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><div>File <strong>assets_import.xlsx</strong> uploaded — 52 rows detected</div></div>
+        <div style="font-size:12.5px;font-weight:600;color:var(--t2);margin-bottom:10px">Map your columns to RealAsset fields:</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead><tr><th style="text-align:left;padding:7px 11px;background:var(--surf2);border:1px solid var(--bdr);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--t3)">Your Column</th><th style="text-align:left;padding:7px 11px;background:var(--surf2);border:1px solid var(--bdr);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--t3)">Sample</th><th style="text-align:left;padding:7px 11px;background:var(--surf2);border:1px solid var(--bdr);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--t3)">Map to Field</th></tr></thead>
+          <tbody>
+            <tr><td style="padding:8px 11px;border:1px solid var(--bdr2);font-weight:600">Item Name</td><td style="padding:8px 11px;border:1px solid var(--bdr2);color:var(--t3)">MacBook Pro 14"</td><td style="padding:8px 11px;border:1px solid var(--bdr2)"><select class="fs" style="padding:4px 24px 4px 7px;font-size:11.5px;height:30px"><option>Asset Name ✓</option></select></td></tr>
+            <tr><td style="padding:8px 11px;border:1px solid var(--bdr2);font-weight:600">Type</td><td style="padding:8px 11px;border:1px solid var(--bdr2);color:var(--t3)">Laptop</td><td style="padding:8px 11px;border:1px solid var(--bdr2)"><select class="fs" style="padding:4px 24px 4px 7px;font-size:11.5px;height:30px"><option>Category</option></select></td></tr>
+            <tr><td style="padding:8px 11px;border:1px solid var(--bdr2);font-weight:600">S/N</td><td style="padding:8px 11px;border:1px solid var(--bdr2);color:var(--t3)">SN-001234</td><td style="padding:8px 11px;border:1px solid var(--bdr2)"><select class="fs" style="padding:4px 24px 4px 7px;font-size:11.5px;height:30px"><option>Serial Number</option></select></td></tr>
+            <tr><td style="padding:8px 11px;border:1px solid var(--bdr2);font-weight:600">Price</td><td style="padding:8px 11px;border:1px solid var(--bdr2);color:var(--t3)">2499.00</td><td style="padding:8px 11px;border:1px solid var(--bdr2)"><select class="fs" style="padding:4px 24px 4px 7px;font-size:11.5px;height:30px"><option>Purchase Price</option></select></td></tr>
+            <tr><td style="padding:8px 11px;border:1px solid var(--bdr2);font-weight:600">Dept</td><td style="padding:8px 11px;border:1px solid var(--bdr2);color:var(--t3)">Engineering</td><td style="padding:8px 11px;border:1px solid var(--bdr2)"><select class="fs" style="padding:4px 24px 4px 7px;font-size:11.5px;height:30px"><option>— Skip —</option><option>Department</option></select></td></tr>
+          </tbody>
+        </table>
+        <div style="display:flex;justify-content:space-between;margin-top:18px"><button class="btn btn-o btn-sm" onclick="wStep(1)">← Back</button><button class="btn btn-p btn-sm" onclick="wStep(3)">Next — Review Data →</button></div>
+      </div>
+      <div id="wstep3" style="display:none">
+        <div class="alert ai" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div>Preview of first 5 of <strong>52 rows</strong>. 0 errors. Ready to import.</div></div>
+        <div style="border:1px solid var(--bdr);border-radius:var(--rs);overflow:hidden;margin-bottom:14px">
+          <table style="width:100%;border-collapse:collapse;font-size:12px">
+            <thead><tr><th style="text-align:left;padding:7px 11px;background:var(--surf2);border-bottom:1px solid var(--bdr);font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3)">#</th><th style="text-align:left;padding:7px 11px;background:var(--surf2);border-bottom:1px solid var(--bdr);font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3)">Asset Name</th><th style="text-align:left;padding:7px 11px;background:var(--surf2);border-bottom:1px solid var(--bdr);font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3)">Category</th><th style="text-align:left;padding:7px 11px;background:var(--surf2);border-bottom:1px solid var(--bdr);font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3)">Serial #</th><th style="text-align:left;padding:7px 11px;background:var(--surf2);border-bottom:1px solid var(--bdr);font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3)">Price</th></tr></thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--bdr2)"><td style="padding:8px 11px;color:var(--t4)">1</td><td style="padding:8px 11px;font-weight:600">MacBook Pro 14"</td><td style="padding:8px 11px"><span class="tag">Electronics</span></td><td style="padding:8px 11px;font-family:var(--mono);font-size:10.5px;color:var(--t3)">SN-001234</td><td style="padding:8px 11px">$2,499</td></tr>
+              <tr style="border-bottom:1px solid var(--bdr2)"><td style="padding:8px 11px;color:var(--t4)">2</td><td style="padding:8px 11px;font-weight:600">Dell Monitor U2722D</td><td style="padding:8px 11px"><span class="tag">Electronics</span></td><td style="padding:8px 11px;font-family:var(--mono);font-size:10.5px;color:var(--t3)">SN-001235</td><td style="padding:8px 11px">$649</td></tr>
+              <tr style="border-bottom:1px solid var(--bdr2)"><td style="padding:8px 11px;color:var(--t4)">3</td><td style="padding:8px 11px;font-weight:600">Herman Miller Aeron</td><td style="padding:8px 11px"><span class="tag" style="background:#ecfdf5;color:#059669">Furniture</span></td><td style="padding:8px 11px;color:var(--t4)">—</td><td style="padding:8px 11px">$1,195</td></tr>
+              <tr style="border-bottom:1px solid var(--bdr2)"><td style="padding:8px 11px;color:var(--t4)">4</td><td style="padding:8px 11px;font-weight:600">HP LaserJet Pro M404</td><td style="padding:8px 11px"><span class="tag" style="background:#f0f9ff;color:#0284c7">Equipment</span></td><td style="padding:8px 11px;font-family:var(--mono);font-size:10.5px;color:var(--t3)">SN-001237</td><td style="padding:8px 11px">$289</td></tr>
+              <tr><td style="padding:8px 11px;color:var(--t4)">5</td><td style="padding:8px 11px;font-weight:600">iPad Pro 12.9"</td><td style="padding:8px 11px"><span class="tag">Electronics</span></td><td style="padding:8px 11px;font-family:var(--mono);font-size:10.5px;color:var(--t3)">SN-001238</td><td style="padding:8px 11px">$1,099</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:18px"><button class="btn btn-o btn-sm" onclick="wStep(2)">← Back</button><button class="btn btn-s btn-sm" onclick="nav('assets',document.querySelector('[data-p=assets]'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="20 6 9 17 4 12"/></svg>Confirm &amp; Import 52 Assets</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ EXPORT ═══════════ -->
+<div class="pg" id="pg-export">
+  <div class="ph"><div><div class="pt">Export Data</div><div class="ps">Download your data in various formats</div></div></div>
+  <div style="max-width:680px;display:flex;flex-direction:column;gap:12px">
+    <div class="card"><div class="cb"><div style="display:flex;align-items:flex-start;gap:14px"><div style="width:42px;height:42px;background:#ecfdf5;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:3px">Assets Export</div><div style="font-size:11.5px;color:var(--t3);margin-bottom:11px">Export all assets or filter by status, category, or date range</div><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><select class="fsel"><option>All Statuses</option><option>Active</option><option>Checked Out</option></select><select class="fsel"><option>All Categories</option><option>Electronics</option><option>Furniture</option></select><select class="fsel"><option>CSV</option><option>Excel (.xlsx)</option><option>PDF</option></select><button class="btn btn-s btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export</button></div></div></div></div></div>
+    <div class="card"><div class="cb"><div style="display:flex;align-items:flex-start;gap:14px"><div style="width:42px;height:42px;background:#eef0ff;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4361ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:3px">Users Export</div><div style="font-size:11.5px;color:var(--t3);margin-bottom:11px">Export all user accounts and their assigned roles</div><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><select class="fsel"><option>All Roles</option><option>Administrator</option><option>Manager</option></select><select class="fsel"><option>CSV</option><option>Excel (.xlsx)</option></select><button class="btn btn-p btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export</button></div></div></div></div></div>
+    <div class="card"><div class="cb"><div style="display:flex;align-items:flex-start;gap:14px"><div style="width:42px;height:42px;background:#fffbeb;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:3px">Activity Report</div><div style="font-size:11.5px;color:var(--t3);margin-bottom:11px">Export check-out history and activity logs with date filters</div><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><input class="fi" type="date" value="2025-01-01" style="width:auto;height:34px;font-size:11.5px;padding:0 10px"><input class="fi" type="date" value="2025-04-30" style="width:auto;height:34px;font-size:11.5px;padding:0 10px"><select class="fsel"><option>PDF</option><option>CSV</option><option>Excel</option></select><button class="btn btn-o btn-sm" style="border-color:var(--w);color:var(--w)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export</button></div></div></div></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ SETTINGS ═══════════ -->
+<div class="pg" id="pg-settings">
+  <div class="ph"><div><div class="pt">Settings</div><div class="ps">System configuration and custom fields</div></div></div>
+  <div class="tabs">
+    <div class="tab act" onclick="stab(this,'sg')">General</div>
+    <div class="tab" onclick="stab(this,'sc')">Custom Fields</div>
+    <div class="tab" onclick="stab(this,'sn')">Notifications</div>
+  </div>
+  <div id="sg" style="max-width:620px;display:flex;flex-direction:column;gap:14px">
+    <div class="card"><div class="ch"><div class="ct-">Company Information</div></div><div class="cb"><div class="fg"><div class="fm fgf"><label class="fl">Company Name</label><input class="fi" value="REALSOFT for Software Development"></div><div class="fm"><label class="fl">Industry</label><select class="fs"><option>Technology</option></select></div><div class="fm"><label class="fl">Country</label><select class="fs"><option>Jordan</option></select></div><div class="fm"><label class="fl">Currency</label><select class="fs"><option>JOD — Jordanian Dinar</option><option>USD</option></select></div><div class="fm"><label class="fl">Date Format</label><select class="fs"><option>DD/MM/YYYY</option><option>MM/DD/YYYY</option></select></div></div></div><div class="cf"><span></span><button class="btn btn-p btn-sm">Save Changes</button></div></div>
+    <div class="card"><div class="ch"><div class="ct-">Asset Tag Numbering</div></div><div class="cb"><div class="fg"><div class="fm"><label class="fl">Prefix</label><input class="fi" value="AST-"></div><div class="fm"><label class="fl">Next Number</label><input class="fi" type="number" value="249"></div><div class="fm"><label class="fl">Padding Digits</label><input class="fi" type="number" value="4"></div><div class="fm"><label class="fl">Preview</label><input class="fi" value="AST-0249" readonly style="background:var(--surf2);color:var(--t3)"></div></div></div><div class="cf"><span></span><button class="btn btn-p btn-sm">Save</button></div></div>
+  </div>
+  <div id="sc" style="display:none">
+    <div class="card">
+      <div class="ch"><div><div class="ct-">Custom Fields</div><div class="cs">Extend asset data with additional fields</div></div><button class="btn btn-p btn-sm" onclick="openM('cf-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Field</button></div>
+      <div class="tw"><table>
+        <thead><tr><th>Field Label</th><th>Field Type</th><th>Applies To</th><th>Required</th><th>Active</th><th style="width:70px">Actions</th></tr></thead>
+        <tbody>
+          <tr><td class="tb-b">Condition</td><td><span class="badge bn">Dropdown</span></td><td>All Assets</td><td><span class="badge bs">Yes</span></td><td><span class="badge bs"><span class="bd"></span>Active</span></td><td><div style="display:flex;gap:3px"><button class="ib" style="width:26px;height:26px" onclick="openM('cf-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="ib" style="width:26px;height:26px;color:var(--d)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></div></td></tr>
+          <tr><td class="tb-b">Department</td><td><span class="badge bn">Text</span></td><td>All Assets</td><td><span class="badge bn">No</span></td><td><span class="badge bs"><span class="bd"></span>Active</span></td><td><div style="display:flex;gap:3px"><button class="ib" style="width:26px;height:26px" onclick="openM('cf-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="ib" style="width:26px;height:26px;color:var(--d)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></div></td></tr>
+          <tr><td class="tb-b">Insurance Policy #</td><td><span class="badge bn">Text</span></td><td>Vehicles</td><td><span class="badge bs">Yes</span></td><td><span class="badge bs"><span class="bd"></span>Active</span></td><td><div style="display:flex;gap:3px"><button class="ib" style="width:26px;height:26px" onclick="openM('cf-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="ib" style="width:26px;height:26px;color:var(--d)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></div></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+  <div id="sn" style="display:none;max-width:580px">
+    <div class="card"><div class="ch"><div class="ct-">Notification Preferences</div></div><div class="cb">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:600">Check-Out Notifications</div><div style="font-size:11.5px;color:var(--t3)">Email when asset is checked out</div></div><label style="position:relative;width:42px;height:23px;cursor:pointer"><input type="checkbox" checked style="position:absolute;opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:#4361ee;border-radius:23px"><span style="position:absolute;right:3px;top:3px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span></span></label></div>
+        <div class="sep" style="margin:0"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:600">Overdue Asset Alerts</div><div style="font-size:11.5px;color:var(--t3)">Daily digest of overdue check-outs</div></div><label style="position:relative;width:42px;height:23px;cursor:pointer"><input type="checkbox" checked style="position:absolute;opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:#4361ee;border-radius:23px"><span style="position:absolute;right:3px;top:3px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span></span></label></div>
+        <div class="sep" style="margin:0"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:600">Maintenance Reminders</div><div style="font-size:11.5px;color:var(--t3)">Notify 7 days before scheduled maintenance</div></div><label style="position:relative;width:42px;height:23px;cursor:pointer"><input type="checkbox" style="position:absolute;opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:#e2e8f0;border-radius:23px"><span style="position:absolute;left:3px;top:3px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span></span></label></div>
+      </div>
+    </div><div class="cf"><span></span><button class="btn btn-p btn-sm">Save Preferences</button></div></div>
+  </div>
+</div>
+
+  </main>
+</div>
+
+<!-- ═══════ MODALS ═══════ -->
+
+<!-- Add User -->
+<div class="mb" id="add-user"><div class="modal">
+  <div class="mh"><div class="mt">Add New User</div><button class="cb-btn" onclick="closeM('add-user')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="mbd"><div style="display:flex;flex-direction:column;gap:12px">
+    <div class="fg"><div class="fm"><label class="fl">First Name <span class="req">*</span></label><input class="fi" placeholder="First name"></div><div class="fm"><label class="fl">Last Name <span class="req">*</span></label><input class="fi" placeholder="Last name"></div></div>
+    <div class="fm"><label class="fl">Email Address <span class="req">*</span></label><input class="fi" type="email" placeholder="user@realsoft.com"></div>
+    <div class="fg"><div class="fm"><label class="fl">Role</label><select class="fs"><option>User</option><option>Manager</option><option>Administrator</option><option>Viewer</option></select></div><div class="fm"><label class="fl">Security Group</label><select class="fs"><option>Standard Users</option><option>Asset Managers</option><option>Administrators</option></select></div></div>
+    <div class="fm"><label class="fl">Temporary Password <span class="req">*</span></label><input class="fi" type="password" placeholder="Min. 8 characters"></div>
+    <div style="display:flex;align-items:center;gap:7px"><input type="checkbox" id="fpwd" checked style="accent-color:var(--p);width:13px;height:13px"><label for="fpwd" style="font-size:12.5px;color:var(--t2)">Require password change on first login</label></div>
+  </div></div>
+  <div class="mft"><button class="btn btn-o btn-sm" onclick="closeM('add-user')">Cancel</button><button class="btn btn-p btn-sm">Create User</button></div>
+</div></div>
+
+<!-- Change Password -->
+<div class="mb" id="pwd-modal"><div class="modal">
+  <div class="mh"><div class="mt">Change Password</div><button class="cb-btn" onclick="closeM('pwd-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="mbd"><div style="display:flex;flex-direction:column;gap:12px">
+    <div class="fm"><label class="fl">New Password</label><input class="fi" type="password" placeholder="Min. 8 characters"></div>
+    <div class="fm"><label class="fl">Confirm Password</label><input class="fi" type="password" placeholder="Re-enter new password"></div>
+    <div style="background:var(--surf2);border-radius:var(--rs);padding:11px;font-size:11.5px;color:var(--t3)">Must be ≥ 8 characters, with uppercase and a number.</div>
+    <div style="display:flex;align-items:center;gap:7px"><input type="checkbox" style="accent-color:var(--p);width:13px;height:13px"><label style="font-size:12.5px;color:var(--t2)">Send reset email to user</label></div>
+  </div></div>
+  <div class="mft"><button class="btn btn-o btn-sm" onclick="closeM('pwd-modal')">Cancel</button><button class="btn btn-p btn-sm">Update Password</button></div>
+</div></div>
+
+<!-- Assign Asset -->
+<div class="mb" id="assign-modal"><div class="modal">
+  <div class="mh"><div class="mt">Assign Asset — Omar Youssef</div><button class="cb-btn" onclick="closeM('assign-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="mbd"><div style="display:flex;flex-direction:column;gap:12px">
+    <div class="fm"><label class="fl">Search Asset</label><div class="sf" style="max-width:100%;width:100%"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search by name or tag…"></div></div>
+    <div style="border:1px solid var(--bdr);border-radius:var(--rs);overflow:hidden">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr><th style="padding:7px 11px;background:var(--surf2);border-bottom:1px solid var(--bdr);text-align:center;width:36px"></th><th style="padding:7px 11px;background:var(--surf2);border-bottom:1px solid var(--bdr);text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3)">Asset</th><th style="padding:7px 11px;background:var(--surf2);border-bottom:1px solid var(--bdr);text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3)">Tag</th></tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--bdr2)"><td style="padding:8px 11px;text-align:center"><input type="radio" name="asel" style="accent-color:var(--p)"></td><td style="padding:8px 11px;font-weight:600">Dell Monitor U2722D</td><td style="padding:8px 11px;font-family:var(--mono);font-size:10.5px;color:var(--t3)">AST-0091</td></tr>
+          <tr style="border-bottom:1px solid var(--bdr2)"><td style="padding:8px 11px;text-align:center"><input type="radio" name="asel" style="accent-color:var(--p)"></td><td style="padding:8px 11px;font-weight:600">iPad Pro 12.9" (6th Gen)</td><td style="padding:8px 11px;font-family:var(--mono);font-size:10.5px;color:var(--t3)">AST-0109</td></tr>
+          <tr><td style="padding:8px 11px;text-align:center"><input type="radio" name="asel" style="accent-color:var(--p)"></td><td style="padding:8px 11px;font-weight:600">Logitech MX Master 3</td><td style="padding:8px 11px;font-family:var(--mono);font-size:10.5px;color:var(--t3)">AST-0144</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="fm"><label class="fl">Expected Return Date</label><input class="fi" type="date"></div>
+    <div class="fm"><label class="fl">Notes</label><textarea class="fta" style="min-height:55px" placeholder="Optional notes…"></textarea></div>
+  </div></div>
+  <div class="mft"><button class="btn btn-o btn-sm" onclick="closeM('assign-modal')">Cancel</button><button class="btn btn-p btn-sm">Assign Asset</button></div>
+</div></div>
+
+<!-- Custom Field -->
+<div class="mb" id="cf-modal"><div class="modal">
+  <div class="mh"><div class="mt">Add Custom Field</div><button class="cb-btn" onclick="closeM('cf-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="mbd"><div style="display:flex;flex-direction:column;gap:12px">
+    <div class="fm"><label class="fl">Field Label <span class="req">*</span></label><input class="fi" placeholder="e.g., Condition, Department…"></div>
+    <div class="fm"><label class="fl">Field Type</label><select class="fs"><option>Text</option><option>Number</option><option>Date</option><option>Dropdown</option><option>Checkbox</option><option>Textarea</option></select></div>
+    <div class="fm"><label class="fl">Applies To</label><select class="fs"><option>All Assets</option><option>Electronics</option><option>Furniture</option><option>Vehicles</option></select></div>
+    <div class="fm"><label class="fl">Dropdown Options (one per line)</label><textarea class="fta" placeholder="Excellent&#10;Good&#10;Fair&#10;Poor"></textarea><div class="fh">Only visible for Dropdown type</div></div>
+    <div style="display:flex;align-items:center;gap:7px"><input type="checkbox" id="freq" style="accent-color:var(--p);width:13px;height:13px"><label for="freq" style="font-size:12.5px;color:var(--t2)">Mark as required field</label></div>
+  </div></div>
+  <div class="mft"><button class="btn btn-o btn-sm" onclick="closeM('cf-modal')">Cancel</button><button class="btn btn-p btn-sm">Save Field</button></div>
+</div></div>
+
+<!-- Create Group -->
+<div class="mb" id="group-modal"><div class="modal">
+  <div class="mh"><div class="mt">Create Security Group</div><button class="cb-btn" onclick="closeM('group-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="mbd"><div style="display:flex;flex-direction:column;gap:12px">
+    <div class="fm"><label class="fl">Group Name <span class="req">*</span></label><input class="fi" placeholder="e.g., Asset Managers"></div>
+    <div class="fm"><label class="fl">Description</label><input class="fi" placeholder="Brief description of this group's role"></div>
+    <div class="fm"><label class="fl">Based on Template</label><select class="fs"><option>— Start from scratch —</option><option>Copy from Administrators</option><option>Copy from Asset Managers</option><option>Copy from Standard Users</option></select></div>
+  </div></div>
+  <div class="mft"><button class="btn btn-o btn-sm" onclick="closeM('group-modal')">Cancel</button><button class="btn btn-p btn-sm">Create Group</button></div>
+</div></div>
+
+<script>
+// ─ NAV ─
+const bcs={
+  dash:['Dashboard'],assets:['Assets','All Assets'],add:['Assets','Add Asset'],
+  detail:['Assets','Asset Details'],users:['People','Users'],emp:['People','Employees'],
+  groups:['Security','Groups'],reports:['Analytics','Reports'],
+  import:['Assets','Import'],export:['Assets','Export'],settings:['System','Settings']
+};
+const pgMap={add:'add',detail:'detail'};
+function nav(page,el){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('act'));
+  const pid=pgMap[page]||page;
+  const pg=document.getElementById('pg-'+pid);
+  if(pg)pg.classList.add('act');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('act'));
+  if(el)el.classList.add('act');
+  const bc=bcs[page]||[page];
+  const bcEl=document.getElementById('bc');
+  const chev='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;color:var(--t4)"><polyline points="9 18 15 12 9 6"/></svg>';
+  if(bc.length===1)bcEl.innerHTML=`<span>RealAsset</span>${chev}<span class="act">${bc[0]}</span>`;
+  else bcEl.innerHTML=`<span>RealAsset</span>${chev}<span>${bc[0]}</span>${chev}<span class="act">${bc[1]}</span>`;
+  document.getElementById('ct').scrollTop=0;
+}
+
+// ─ MODALS ─
+function openM(id){document.getElementById(id).classList.add('op')}
+function closeM(id){document.getElementById(id).classList.remove('op')}
+document.querySelectorAll('.mb').forEach(b=>{b.addEventListener('click',function(e){if(e.target===this)this.classList.remove('op')})});
+
+// ─ IMPORT WIZARD ─
+function wStep(s){
+  [1,2,3].forEach(n=>{
+    document.getElementById('wstep'+n).style.display=n===s?'block':'none';
+    const ws=document.getElementById('ws'+n);
+    const wc=document.getElementById('wc'+n);
+    ws.className='ws'+(n<s?' done':n===s?' act':'');
+    wc.innerHTML=n<s?'✓':n;
+  });
+  [1,2].forEach(n=>{
+    const l=document.getElementById('wln'+n);
+    l.className='wline'+(n<s?' done':'');
+  });
+}
+
+// ─ SETTINGS TABS ─
+function stab(el,id){
+  document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('act'));
+  el.classList.add('act');
+  ['sg','sc','sn'].forEach(s=>{
+    const d=document.getElementById(s);
+    if(d)d.style.display=s===id?(s==='sg'?'flex':'block'):'none';
+  });
+}
+</script>
+</body>
+</html>

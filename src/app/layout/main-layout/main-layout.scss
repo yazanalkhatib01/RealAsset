@@ -1,0 +1,21 @@
+:host {
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.main-wrapper {
+  margin-left: var(--sw);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}

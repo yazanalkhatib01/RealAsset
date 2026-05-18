@@ -1,0 +1,38 @@
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <mat-icon>layers</mat-icon>
+    </div>
+    <div class="logo-text">
+      <span class="logo-name">RealAsset</span>
+      <span class="logo-sub">by REALSOFT</span>
+    </div>
+  </div>
+
+  @for (section of sections; track section.label) {
+    <div class="nav-section">
+      @if (section.label) {
+        <span class="nav-label">{{ section.label }}</span>
+      }
+      @for (item of section.items; track item.route) {
+        <a class="nav-item" [routerLink]="item.route" routerLinkActive="active">
+          <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+          <span class="nav-text">{{ item.label }}</span>
+          @if (item.badge) {
+            <span class="nav-badge">{{ item.badge }}</span>
+          }
+        </a>
+      }
+    </div>
+  }
+
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="avatar">AH</div>
+      <div>
+        <div class="user-name">Ahmed Hassan</div>
+        <div class="user-role">Administrator</div>
+      </div>
+    </div>
+  </div>
+</aside>
