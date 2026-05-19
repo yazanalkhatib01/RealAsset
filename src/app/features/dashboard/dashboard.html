@@ -1,1 +1,169 @@
-<p>dashboard works!</p>
+<!-- ─ Page Header ─ -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-sub">Asset operations overview — updated just now</p>
+  </div>
+  <div class="page-actions">
+    <a routerLink="/reports" class="btn btn-outline"> <mat-icon>bar_chart</mat-icon> Reports </a>
+    <a routerLink="/assets/new" class="btn btn-primary"> <mat-icon>add</mat-icon> Add Asset </a>
+  </div>
+</div>
+
+<!-- ─ KPI Cards ─ -->
+<div class="kpi-grid">
+  @for (kpi of kpis(); track kpi.label) {
+    <div class="kpi-card">
+      <div class="kpi-top">
+        <span class="kpi-label">{{ kpi.label }}</span>
+        <div class="kpi-icon" [style.background]="kpi.bg">
+          <mat-icon [style.color]="kpi.color">{{ kpi.icon }}</mat-icon>
+        </div>
+      </div>
+      <div class="kpi-value">{{ kpi.value }}</div>
+      <div class="kpi-footer">
+        <span class="kpi-change" [class.up]="kpi.up" [class.down]="!kpi.up">
+          <mat-icon>{{ kpi.up ? 'trending_up' : 'trending_down' }}</mat-icon>
+          {{ kpi.change }}
+        </span>
+        <span class="kpi-period">vs last month</span>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- ─ Charts Row ─ -->
+<div class="charts-row">
+  <!-- Bar Chart -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Asset Additions</div>
+        <div class="card-sub">Monthly trend</div>
+      </div>
+    </div>
+    <div class="card-body chart-container">
+      <ngx-charts-bar-vertical
+        [results]="monthlyData"
+        [scheme]="colorScheme"
+        [xAxis]="true"
+        [yAxis]="true"
+        [showGridLines]="true"
+        [roundEdges]="true"
+        [barPadding]="12"
+        [tooltipDisabled]="false"
+      >
+      </ngx-charts-bar-vertical>
+    </div>
+  </div>
+
+  <!-- Donut Chart -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Assets by Category</div>
+        <div class="card-sub">Current distribution</div>
+      </div>
+    </div>
+    <div class="card-body chart-container">
+      <ngx-charts-pie-chart
+        [results]="categoryData()"
+        [scheme]="colorScheme"
+        [legend]="true"
+        [legendPosition]="legendPosition"
+        [labels]="false"
+        [doughnut]="true"
+        [arcWidth]="0.35"
+      >
+      </ngx-charts-pie-chart>
+    </div>
+  </div>
+</div>
+
+<!-- ─ Activity Feed + Overdue ─ -->
+<div class="bottom-row">
+  <!-- Activity Feed -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Activity Feeds</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="feed-tabs">
+      @for (tab of tabs; track tab.key) {
+        <button class="feed-tab" [class.active]="activeTab() === tab.key" (click)="setTab(tab.key)">
+          {{ tab.label }}
+        </button>
+      }
+    </div>
+
+    <!-- Feed Table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Asset Tag ID</th>
+            <th>Description</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of feedItems(); track item.tag) {
+            <tr>
+              <td>
+                <a routerLink="/assets" class="link">{{ item.tag }}</a>
+              </td>
+              <td>{{ item.name }}</td>
+              <td class="mono">{{ item.date }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="3" class="empty">No records found</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Overdue -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Overdue Check-Outs</div>
+      <a routerLink="/assets" class="btn-ghost">View All</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>Employee</th>
+            <th>Due</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of overdueItems; track item.name) {
+            <tr>
+              <td class="bold">{{ item.name }}</td>
+              <td>{{ item.employee }}</td>
+              <td class="mono">{{ item.due }}</td>
+              <td>
+                <span class="badge" [ngClass]="item.status">
+                  <span class="dot"></span>
+                  {{
+                    item.status === 'overdue'
+                      ? 'Overdue'
+                      : item.status === 'due-soon'
+                        ? 'Due Soon'
+                        : 'Out'
+                  }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
